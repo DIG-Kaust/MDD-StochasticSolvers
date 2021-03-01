@@ -16,4 +16,12 @@ seabed followed by standard MDD
 * **Marchenko_angle_gathers.ipynb**: notebook performing marchenko redatuming + MDD + angle gathers for a number of depth levels
 
 
+## Getting started
+To ensure reproducibility of the results, we suggest using the `environment.yml` file when creating an environment.
+Provided that Anaconda (or Miniconda) is avaiable in your system, to create a new environment simply run:
 
+```
+conda env create -f environment.yml
+```
+
+to create an environment called `mdd-stochastic`.
