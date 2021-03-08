@@ -18,7 +18,10 @@ seabed followed by standard MDD
 
 ## Getting started
 To ensure reproducibility of the results, we suggest using the `environment.yml` file when creating an environment.
-Provided that Anaconda (or Miniconda) is avaiable in your system, to create a new environment simply run:
+
+When working within KAUST computational environment, first install Miniconda using `https://github.com/kaust-rccl/ibex-miniconda-install`.
+
+Once you have made sure that Anaconda (or Miniconda) is available in your system, to create a new environment simply run:
 
 ```
 conda env create -f environment.yml
