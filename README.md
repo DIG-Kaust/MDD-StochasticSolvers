@@ -11,6 +11,8 @@ This repository is organized as follows:
 * **AngleGather.py**: routine for computation of angle gathers
 
 
+* **MDD_basic.ipynb**: notebook performing a basic example of MDC and MDD to familiarize with the forward modelling and inverse problem
+
 * **WavefieldSeparation-dipping_MDD_dipping.ipynb**: notebook performing wavefield separation for synthetic obc data with dipping
 seabed followed by standard MDD
 * **Marchenko_angle_gathers.ipynb**: notebook performing marchenko redatuming + MDD + angle gathers for a number of depth levels
