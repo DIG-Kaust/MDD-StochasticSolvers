@@ -1,0 +1,12 @@
+name: mdd-stochastic
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - python>=3.6.4
+  - numpy>=1.15.0
+  - scipy>=1.4.0
+  - pytorch>=1.2.0
+  - pylops
+  - pylops-gpu
