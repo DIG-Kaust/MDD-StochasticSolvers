@@ -9,5 +9,6 @@ dependencies:
   - scipy>=1.4.0
   - pytorch>=1.2.0
   - pylops
+  - matplotlib
   - pip:
     - pylops-gpu
