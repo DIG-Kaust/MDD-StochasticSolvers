@@ -9,4 +9,5 @@ dependencies:
   - scipy>=1.4.0
   - pytorch>=1.2.0
   - pylops
-  - pylops-gpu
+  - pip:
+    - pylops-gpu
