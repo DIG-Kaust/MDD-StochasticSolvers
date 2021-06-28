@@ -12,6 +12,8 @@ This repository is organized as follows:
 
 * **MDD_basic.ipynb**: notebook performing a basic example of MDC and MDD to familiarize with the forward modelling and inverse problem
 
+* **MDD_basic_trackednorms.ipynb**: notebook performing the basic example of MDC and MDD with additional code for tracking norm of residual and error
+
 * **MDD_stochasticgradient.ipynb**: notebook performing a stochastic gradient descent example of MDC and MDD
 * **MDD_minibatchGradient.ipynb**: notebook performing minibatch gradient descent example of MDC and MDD
 * **MDD_Permutated_MiniBatch_gradient_descent.ipynb**: notebook performing minibatch gradient descent example of MDC and MDD with permutation of sources in Gwav
