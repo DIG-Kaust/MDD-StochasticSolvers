@@ -13,14 +13,24 @@ This repository is organized as follows:
 * **MDD_basic.ipynb**: notebook performing a basic example of MDC and MDD to familiarize with the forward modelling and inverse problem
 
 * **MDD_basic_trackednorms.ipynb**: notebook performing the basic example of MDC and MDD with additional code for tracking norm of residual and error
+* **Full_Batch_MDD_comparison_FB.ipynb**: notebook compares the cost function and enorm of the MDD operator and Optimizer
+* **Minibatch_MDD_comparison.ipynb**: notebook compares the cost and enorm of the optimizer(mini_batches) with the LSQR_Solver
+
 
 * **MDD_stochasticgradient.ipynb**: notebook performing a stochastic gradient descent example of MDC and MDD
 * **MDD_minibatchGradient.ipynb**: notebook performing minibatch gradient descent example of MDC and MDD
 * **MDD_Permutated_MiniBatch_gradient_descent.ipynb**: notebook performing minibatch gradient descent example of MDC and MDD with permutation of sources in Gwav
 
+
 * **Advanced_stochastic_solvers.ipynb**: notebook performing MDC with advanced gradient based solvers
 * **Minibatch_Advanced_solver**: notebook performing advanced gradient based solvers with minibatches
 * **Advanced_Solvers_Func.ipynb**: notebook performs and compares MDC with advanced gradient solvers and compares different learning rate schedulers
+
+
+
+* **Full Batch Rtrue_model.ipynb**: notebook performs MDC computation with real data.
+
+* **MiniBatch_Rtrue model.ipynb**: notebook performs MDC computation with the minibatches of real data using optimizers.
 
 * **WavefieldSeparation-dipping_MDD_dipping.ipynb**: notebook performing wavefield separation for synthetic obc data with dipping
 seabed followed by standard MDD
