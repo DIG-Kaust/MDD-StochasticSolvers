@@ -27,10 +27,13 @@ This repository is organized as follows:
 * **Advanced_Solvers_Func.ipynb**: notebook performs and compares MDC with advanced gradient solvers and compares different learning rate schedulers
 
 
-
-* **Full Batch Rtrue_model.ipynb**: notebook performs MDC computation with real data.
-
+* **Full Batch Rtrue_model.ipynb**: notebook performs MDC computation with real data using the Rtrue model of the data.
 * **MiniBatch_Rtrue model.ipynb**: notebook performs MDC computation with the minibatches of real data using optimizers.
+
+
+* **MDC_real_data_(FB).ipynb**: notebook performs MDC computation with the real data without using rtrue model.
+* **MDC_real_data_(minibatch).ipynb**: notebook performs with mini_batches of real data. 
+
 
 * **WavefieldSeparation-dipping_MDD_dipping.ipynb**: notebook performing wavefield separation for synthetic obc data with dipping
 seabed followed by standard MDD
