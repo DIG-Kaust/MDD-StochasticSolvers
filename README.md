@@ -32,7 +32,12 @@ This repository is organized as follows:
 
 
 * **MDC_real_data_(FB).ipynb**: notebook performs MDC computation with the real data without using rtrue model.
-* **MDC_real_data_(minibatch).ipynb**: notebook performs with mini_batches of real data. 
+* **MDC_real_data_(minibatch).ipynb**: notebook performs with mini_batches of real data.
+
+
+* **Real data FB models.ipynb**: notebook constructs the models of stochastic solvers using full batch of real data.
+* **Real Data minibatch Models.ipynb**: notebook constructs the models of stochastic solvers using mini-batches of real data. 
+
 
 * **WavefieldSeparation-dipping_MDD_dipping.ipynb**: notebook performing wavefield separation for synthetic obc data with dipping
 seabed followed by standard MDD
