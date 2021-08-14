@@ -2,47 +2,33 @@
 
 Repository containing material for the `Multi-dimensional deconvolution with stochastic solvers` project.
 
+Two synthetic examples are considered:
+
+* Hyperbolic: Set of synthetically generated hyperbolic events for both model and kernel operator
+* WavefieldSeparation-dipping: Layered model with dipping seabed and receivers in obc acquisition. Data are created via FD modelling up/down separation
+
 
 ## Project structure
 This repository is organized as follows:
 
 * **Data**: folder where input data must be placed (cannot be uploaded directly to Github and will be shared separately)
-* **calibrate.py**: routine for calibration of seismic data prior to wavefield separation
-* **AngleGather.py**: routine for computation of angle gathers
 
-* **MDD_basic.ipynb**: notebook performing a basic example of MDC and MDD to familiarize with the forward modelling and inverse problem
+* **stochmdd.py**: set of routines to perform MDD with stochastic gradients
 
-* **MDD_basic_trackednorms.ipynb**: notebook performing the basic example of MDC and MDD with additional code for tracking norm of residual and error
-* **Full_Batch_MDD_comparison_FB.ipynb**: notebook compares the cost function and enorm of the MDD operator and Optimizer
-* **Minibatch_MDD_comparison.ipynb**: notebook compares the cost and enorm of the optimizer(mini_batches) with the LSQR_Solver
+* **Hyperbolic_MDD_basic.ipynb**: notebook performing a basic example of MDC and MDD for both single and multiple virtual sources to familiarize with the forward modelling and inverse problem
 
+* **Hyperbolic_MDD_basic_trackednorms.ipynb**: notebook performing the basic example of MDC and MDD for a single virtual source with additional code for tracking norm of residual and error
 
-* **MDD_stochasticgradient.ipynb**: notebook performing a stochastic gradient descent example of MDC and MDD
-* **MDD_minibatchGradient.ipynb**: notebook performing minibatch gradient descent example of MDC and MDD
-* **MDD_Permutated_MiniBatch_gradient_descent.ipynb**: notebook performing minibatch gradient descent example of MDC and MDD with permutation of sources in Gwav
+* **Hyperbolic_MDD_stochastic.ipynb**: notebook performing MDD on single virtual source with full batch stochastic solvers
 
+* **Hyperbolic_MDD_stochasticminibatch.ipynb**: notebook performing MDD on single virtual source with mini batch stochastic solvers
 
-* **Advanced_stochastic_solvers.ipynb**: notebook performing MDC with advanced gradient based solvers
-* **Minibatch_Advanced_solver**: notebook performing advanced gradient based solvers with minibatches
-* **Advanced_Solvers_Func.ipynb**: notebook performs and compares MDC with advanced gradient solvers and compares different learning rate schedulers
+* **WavefieldSeparation-dipping_MDD_basic.ipynb**: notebook performing wavefield separation for synthetic obc data with dipping seabed followed by standard MDD
 
+* **WavefieldSeparation-dipping_MDD_stochastic_singlesource.ipynb**: notebook performing MDD on single virtual source with stochastic solvers
 
-* **Full Batch Rtrue_model.ipynb**: notebook performs MDC computation with real data using the Rtrue model of the data.
-* **MiniBatch_Rtrue model.ipynb**: notebook performs MDC computation with the minibatches of real data using optimizers.
+* **WavefieldSeparation-dipping_MDD_stochastic_multisource.ipynb**: notebook performing MDD on multiple virtual sources with stochastic solvers
 
-
-* **MDC_real_data_(FB).ipynb**: notebook performs MDC computation with the real data without using rtrue model.
-* **MDC_real_data_(minibatch).ipynb**: notebook performs with mini_batches of real data.
-
-
-* **Real data FB models.ipynb**: notebook constructs the models of stochastic solvers using full batch of real data.
-* **Real Data minibatch Models.ipynb**: notebook constructs the models of stochastic solvers using mini-batches of real data. 
-
-
-* **WavefieldSeparation-dipping_MDD_dipping.ipynb**: notebook performing wavefield separation for synthetic obc data with dipping
-seabed followed by standard MDD
-
-* **Marchenko_angle_gathers.ipynb**: notebook performing marchenko redatuming + MDD + angle gathers for a number of depth levels
 
 
 ## Getting started
