@@ -98,7 +98,7 @@ def MDDbatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs,
     criterion = nn.MSELoss()
     optimizer = optimizer([model], **kwargs_solver)
     MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided)
-
+    
     losshist = []
     lossavg = []
     enormhist = []
@@ -106,7 +106,7 @@ def MDDbatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs,
         # compute forward and loss
         data = MDCop(model, Gfft)
         loss = criterion(d, data)
-
+        
         # backward and optimize
         loss.backward()
         optimizer.step()
@@ -188,6 +188,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     criterion = nn.MSELoss()
     optimizer = optimizer([model], **kwargs_solver)
     MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided)
+    MDCAllop = MDC(nt, dt, dr, nv=nv, twosided=twosided)
 
     # Define scheduler
     if scheduler is not None:
@@ -197,11 +198,19 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     trainloader = DataLoader(dataset=TensorDataset(Gfft, d),
                              batch_size=batch_size,
                              shuffle=True)
-
+        
     losshist = []
     lossavg = []
+    lossepoch = []
     enormhist = []
     lr = []
+    
+    #with torch.no_grad():
+    #        dataall = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
+    #        lossall = criterion(torch.transpose(dataall, 1, 0), d)
+    #        lossepoch.append(lossall.item())
+    lossepoch.append(criterion(d, d*0).item())
+
     for epoch in range(n_epochs):
         losses = []
 
@@ -239,6 +248,12 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
         # compute average loss over epoch
         avg_loss = sum(losses) / len(losses)
         lossavg.append(avg_loss)
+        
+        # compute loss of entire batch
+        with torch.no_grad():
+            dataall = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
+            lossall = criterion(torch.transpose(dataall, 1, 0), d)
+            lossepoch.append(lossall.item())
 
         if (epoch + 1) % epochprint == 0:
             print(f'epoch: {epoch + 1:3d}, loss : {loss.item():.4e}, loss avg : {avg_loss:.4e}')
@@ -246,7 +261,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     # compute final data
     data = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
 
-    return model, data, losshist, lossavg, enormhist, lr
+    return model, data, losshist, lossavg, lossepoch, enormhist, lr
 
 
 def MDDpage(nt, nr, dt, dr, Gfft, d, n_epochs, batch_size,
