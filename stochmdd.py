@@ -25,7 +25,7 @@ class MDC(nn.Module):
         Number of virtual receivers
 
     """
-    def __init__(self, nt, dt, dr, nv=1, twosided=True):
+    def __init__(self, nt, dt, dr, nv=1, twosided=True, reciprocity=False):
         self.nt = nt
         self.dt = dt
         self.dr = dr
@@ -35,6 +35,7 @@ class MDC(nn.Module):
             self.nteff = 2 * self.nt - 1
         else:
             self.nteff = self.nt
+        self.reciprocity = reciprocity
         super().__init__()
 
     def forward(self, model, G):
@@ -53,7 +54,11 @@ class MDC(nn.Module):
         MDCop = MDClops(G, nt=self.nteff, nv=self.nv, dt=self.dt,
                         dr=self.dr, twosided=self.twosided, transpose=False)
         MDCop = pylops_gpu.TorchOperator(MDCop, pylops=True)
-
+        
+        # Apply reciprocity
+        if self.reciprocity:
+            model = 0.5*(model + model.transpose(2, 1))
+        
         # Apply operator to model data
         data = MDCop.apply(model.view(-1))
         data = data.view(self.nteff, ns, self.nv).squeeze()
@@ -140,7 +145,7 @@ def MDDbatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs,
 
 def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
                  twosided=True, mtrue=None, ivstrue=None,
-                 seed=None, scheduler=None, epochprint=10,
+                 seed=None, scheduler=None, epochprint=10, reciprocity=False,
                  kwargs_sched=None, **kwargs_solver):
     r"""MDD with mini-batch gradient descent methods
 
@@ -168,8 +173,22 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             Kernel is two-sided (``True``) or one-sided (``False``)
         mtrue : :obj:`torch.tensor`, optional
             True model (:math:`2n_t-1 \times n_r`)
-
-        """
+        ivstrue : :obj:`int`, optional
+            Index of virtual source to select when  computing error norm
+        seed : :obj:`int`, optional
+            Seed (if set, the data will be shuffled always in the same way
+        scheduler : :obj:`torch.optim.lr_scheduler`, optional
+            Scheduler object
+        epochprint : :obj:`int`, optional
+            Number of epochs after which the losses are printed on screen
+        reciprocity : :obj:`bool`, optional
+            Enfore reciprocity at each iteration
+        kwargs_sched : :obj:`dict`, optional
+            Additional keyword arguments for scheduler
+        kwargs_solver : :obj:`dict`, optional
+            Additional keyword arguments for optimizer
+            
+    """
     # Set seed
     if seed is not None:
         torch.manual_seed(seed)
@@ -187,8 +206,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     # Define operator, loss, and solver
     criterion = nn.MSELoss()
     optimizer = optimizer([model], **kwargs_solver)
-    MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided)
-    MDCAllop = MDC(nt, dt, dr, nv=nv, twosided=twosided)
+    MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity)
+    MDCAllop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity)
 
     # Define scheduler
     if scheduler is not None:
@@ -204,7 +223,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     lossepoch = []
     enormhist = []
     lr = []
-    
+    firstgrad = True
     #with torch.no_grad():
     #        dataall = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
     #        lossall = criterion(torch.transpose(dataall, 1, 0), d)
@@ -215,6 +234,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
         losses = []
 
         for Gbatch, dbatch in trainloader:
+            optimizer.zero_grad()
+            
             # compute forward and loss
             data = MDCop(model, torch.transpose(Gbatch, 1, 0).cpu().numpy())
             loss = criterion(torch.transpose(dbatch, 1, 0), data)
@@ -222,8 +243,16 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             # backward and optimize
             loss.backward()
             optimizer.step()
-            optimizer.zero_grad()
+            
+            # compute first gradient norm
+            if firstgrad:
+                with torch.no_grad():
+                    firstgrad = False
+                    grad = model.grad.clone().view(-1)
+                    gnorm = torch.sum(torch.abs(grad)**2).item()
+                    print('Initial Gradient norm: %e, Scaled: %e' % (gnorm, gnorm * optimizer.param_groups[0]["lr"]**2))
 
+            # update losses history
             losshist.append(loss.item())
             losses.append(loss.item())
 
@@ -257,9 +286,10 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
 
         if (epoch + 1) % epochprint == 0:
             print(f'epoch: {epoch + 1:3d}, loss : {loss.item():.4e}, loss avg : {avg_loss:.4e}')
-
+    
     # compute final data
     data = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
+    print('Final Model norm: %e' % torch.sum(torch.abs(model)**2).item())
 
     return model, data, losshist, lossavg, lossepoch, enormhist, lr
 
