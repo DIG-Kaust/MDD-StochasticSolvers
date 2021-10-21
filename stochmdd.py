@@ -200,6 +200,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
                         dtype=d.dtype).squeeze().requires_grad_(True)
 
     # Reorganize data and kernel
+    ns = Gfft.shape[1]
     Gfft = torch.transpose(Gfft, 1, 0)
     d = torch.transpose(d, 1, 0)
 
@@ -217,7 +218,6 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     trainloader = DataLoader(dataset=TensorDataset(Gfft, d),
                              batch_size=batch_size,
                              shuffle=True)
-        
     losshist = []
     lossavg = []
     lossepoch = []
@@ -250,7 +250,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
                     firstgrad = False
                     grad = model.grad.clone().view(-1)
                     gnorm = torch.sum(torch.abs(grad)**2).item()
-                    print('Initial Gradient norm: %e, Scaled: %e' % (gnorm, gnorm * optimizer.param_groups[0]["lr"]**2))
+                    print('Initial Gradient norm: %e, scaled by lr: %e' % (gnorm, gnorm * optimizer.param_groups[0]["lr"]**2))
+                    print('Initial Gradient norm as np.linalg.norm: %e, scaled by nbatches:  %e' % ((gnorm**.5*(nteff*batch_size*nv)/2), (gnorm**.5*(nteff*ns*nv)/2)))
 
             # update losses history
             losshist.append(loss.item())

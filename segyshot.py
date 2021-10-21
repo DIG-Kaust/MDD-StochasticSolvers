@@ -170,7 +170,7 @@ class SegyShot:
 				plt.scatter(oxvel1_local, oyvel1_local, color='y', label='IL=0, XL=end')
 				plt.legend()
 
-			return dx, len(vel.xlines), dy, len(vel.ilines)	
+			return dx, len(vel.xlines), dy, len(vel.ilines), (xvel_local, yvel_local)
     
 	def resetrecs(self):
 		"""
