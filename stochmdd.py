@@ -146,7 +146,7 @@ def MDDbatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs,
 def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
                  twosided=True, mtrue=None, ivstrue=None,
                  seed=None, scheduler=None, epochprint=10, reciprocity=False,
-                 kwargs_sched=None, **kwargs_solver):
+                 savegradnorm=False, kwargs_sched=None, **kwargs_solver):
     r"""MDD with mini-batch gradient descent methods
 
         Parameters
@@ -183,6 +183,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             Number of epochs after which the losses are printed on screen
         reciprocity : :obj:`bool`, optional
             Enfore reciprocity at each iteration
+        savegradnorm : :obj:`bool`, optional
+            Save norm of gradient over iterations
         kwargs_sched : :obj:`dict`, optional
             Additional keyword arguments for scheduler
         kwargs_solver : :obj:`dict`, optional
@@ -223,6 +225,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     lossepoch = []
     enormhist = []
     lr = []
+    gnormhist = []
     firstgrad = True
     #with torch.no_grad():
     #        dataall = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
@@ -245,13 +248,17 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             optimizer.step()
             
             # compute first gradient norm
-            if firstgrad:
+            if firstgrad or savegradnorm:
                 with torch.no_grad():
-                    firstgrad = False
+                    
                     grad = model.grad.clone().view(-1)
                     gnorm = torch.sum(torch.abs(grad)**2).item()
-                    print('Initial Gradient norm: %e, scaled by lr: %e' % (gnorm, gnorm * optimizer.param_groups[0]["lr"]**2))
-                    print('Initial Gradient norm as np.linalg.norm: %e, scaled by nbatches:  %e' % ((gnorm**.5*(nteff*batch_size*nv)/2), (gnorm**.5*(nteff*ns*nv)/2)))
+                    if savegradnorm:
+                        gnormhist.append(gnorm)
+                    if firstgrad:
+                        print('Initial Gradient norm: %e, scaled by lr: %e' % (gnorm, gnorm * optimizer.param_groups[0]["lr"]**2))
+                        print('Initial Gradient norm as np.linalg.norm: %e, scaled by nbatches:  %e' % ((gnorm**.5*(nteff*batch_size*nv)/2), (gnorm**.5*(nteff*ns*nv)/2)))
+                        firstgrad = False
 
             # update losses history
             losshist.append(loss.item())
@@ -291,8 +298,11 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     # compute final data
     data = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
     print('Final Model norm: %e' % torch.sum(torch.abs(model)**2).item())
-
-    return model, data, losshist, lossavg, lossepoch, enormhist, lr
+    
+    if not savegradnorm:
+        return model, data, losshist, lossavg, lossepoch, enormhist, lr
+    else:
+        return model, data, losshist, lossavg, lossepoch, enormhist, lr, gnormhist
 
 
 def MDDpage(nt, nr, dt, dr, Gfft, d, n_epochs, batch_size,
