@@ -25,7 +25,7 @@ class MDC(nn.Module):
         Number of virtual receivers
 
     """
-    def __init__(self, nt, dt, dr, nv=1, twosided=True, reciprocity=False):
+    def __init__(self, nt, dt, dr, nv=1, twosided=True, reciprocity=False, timemask=None):
         self.nt = nt
         self.dt = dt
         self.dr = dr
@@ -36,6 +36,7 @@ class MDC(nn.Module):
         else:
             self.nteff = self.nt
         self.reciprocity = reciprocity
+        self.timemask = timemask
         super().__init__()
 
     def forward(self, model, G):
@@ -58,6 +59,10 @@ class MDC(nn.Module):
         # Apply reciprocity
         if self.reciprocity:
             model = 0.5*(model + model.transpose(2, 1))
+        
+        # Apply timemask
+        if self.timemask is not None:
+            model = model * self.timemask
         
         # Apply operator to model data
         data = MDCop.apply(model.view(-1))
@@ -144,9 +149,9 @@ def MDDbatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs,
 
 
 def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
-                 twosided=True, mtrue=None, ivstrue=None,
-                 seed=None, scheduler=None, epochprint=10, reciprocity=False,
-                 savegradnorm=False, kwargs_sched=None, **kwargs_solver):
+                 twosided=True, mtrue=None, ivstrue=None, enormwin=None, enormabsscaling=False,
+                 seed=None, scheduler=None, epochprint=10, reciprocity=False, timemask=None,
+                 savegradnorm=False, savefirstgrad=False, kwargs_sched=None, **kwargs_solver):
     r"""MDD with mini-batch gradient descent methods
 
         Parameters
@@ -177,14 +182,22 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             Index of virtual source to select when  computing error norm
         seed : :obj:`int`, optional
             Seed (if set, the data will be shuffled always in the same way
+        enormwin : :obj:`list`, optional
+            Compute normalization in window for error norm
+        enormabsscaling : :obj:`bool`, optional
+            Normalize fields by absolute maximum for error norm
         scheduler : :obj:`torch.optim.lr_scheduler`, optional
             Scheduler object
         epochprint : :obj:`int`, optional
             Number of epochs after which the losses are printed on screen
         reciprocity : :obj:`bool`, optional
             Enfore reciprocity at each iteration
+        timemask : :obj:`np.ndarray`, optional
+            Apply time mask at every iteration
         savegradnorm : :obj:`bool`, optional
             Save norm of gradient over iterations
+        savefirstgrad : :obj:`bool`, optional
+            Save first gradient
         kwargs_sched : :obj:`dict`, optional
             Additional keyword arguments for scheduler
         kwargs_solver : :obj:`dict`, optional
@@ -209,8 +222,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     # Define operator, loss, and solver
     criterion = nn.MSELoss()
     optimizer = optimizer([model], **kwargs_solver)
-    MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity)
-    MDCAllop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity)
+    MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity, timemask=timemask)
+    MDCAllop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity, timemask=timemask)
 
     # Define scheduler
     if scheduler is not None:
@@ -252,6 +265,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
                 with torch.no_grad():
                     
                     grad = model.grad.clone().view(-1)
+                    if firstgrad:
+                        gradfirst = grad.clone()
                     gnorm = torch.sum(torch.abs(grad)**2).item()
                     if savegradnorm:
                         gnormhist.append(gnorm)
@@ -267,14 +282,43 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             # compute error norm
             if mtrue is not None:
                 if ivstrue is None:
-                    enorm = np.linalg.norm(
-                        model.detach().numpy() / model.detach().numpy().max() -
-                        mtrue.detach().numpy() / mtrue.detach().numpy().max())
+                    # without abs
+                    if not enormabsscaling:
+                        if enormwin is None:
+                            enorm = np.linalg.norm(
+                                model.detach().numpy() / model.detach().numpy().max()-
+                                mtrue.detach().numpy() / mtrue.detach().numpy().max())
+                        else:
+                            enorm = np.linalg.norm(
+                                model.detach().numpy() / model[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3]].detach().numpy().max()-
+                                mtrue.detach().numpy() / mtrue[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3]].detach().numpy().max())
+                    else:
+                        # with abs
+                        if enormwin is None:
+                            enorm = np.linalg.norm(
+                                model.detach().numpy() / np.abs(model.detach().numpy()).max()-
+                                mtrue.detach().numpy() / np.abs(mtrue.detach().numpy()).max())
+                        else:
+                            enorm = np.linalg.norm(
+                                model.detach().numpy() / np.abs(model[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3]].detach().numpy()).max()-
+                                mtrue.detach().numpy() / np.abs(mtrue[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3]].detach().numpy()).max())
                 else:
-                    enorm = np.linalg.norm(
-                        model[..., ivstrue].detach().numpy() / model[
-                            ..., ivstrue].detach().numpy().max() -
-                        mtrue.detach().numpy() / mtrue.detach().numpy().max())
+                    # without abs
+                    if not enormabsscaling:
+                        if enormwin is None:
+                            enorm = np.linalg.norm(model[..., ivstrue].detach().numpy() / model[..., ivstrue].detach().numpy().max() -
+                                                   mtrue.detach().numpy() / mtrue.detach().numpy().max())
+                        else:
+                            enorm = np.linalg.norm(model[..., ivstrue].detach().numpy() / model[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3], ivstrue].detach().numpy().max() -
+                                                   mtrue.detach().numpy() / mtrue[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3]].detach().numpy().max())
+                    else:
+                        # with abs
+                        if enormwin is None:
+                            enorm = np.linalg.norm(model[..., ivstrue].detach().numpy() / np.abs(model[..., ivstrue].detach().numpy()).max() -
+                                                   mtrue.detach().numpy() / np.abs(mtrue.detach().numpy()).max())
+                        else:
+                            enorm = np.linalg.norm(model[..., ivstrue].detach().numpy() / np.abs(model[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3], ivstrue].detach().numpy()).max() -
+                                                   mtrue.detach().numpy() / np.abs(mtrue[enormwin[0]:enormwin[1], enormwin[2]:enormwin[3]].detach().numpy()).max())
                 enormhist.append(enorm)
 
             # update learning rate
@@ -301,8 +345,10 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     
     if not savegradnorm:
         return model, data, losshist, lossavg, lossepoch, enormhist, lr
-    else:
+    elif not savefirstgrad:
         return model, data, losshist, lossavg, lossepoch, enormhist, lr, gnormhist
+    else:
+        return model, data, losshist, lossavg, lossepoch, enormhist, lr, gnormhist, gradfirst
 
 
 def MDDpage(nt, nr, dt, dr, Gfft, d, n_epochs, batch_size,
