@@ -57,7 +57,7 @@ class ExponentialLR():
 
 
 def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
-                 twosided=True, mtrue=None, ivstrue=None,
+                 twosided=True, mtrue=None, ivstrue=None, enormabsscaling=False,
                  seed=None, scheduler=None, epochprint=10, reciprocity=False,
                  savegradnorm=False, timeit=True,
                  kwargs_sched=None, **kwargs_solver):
@@ -147,7 +147,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
         losses = []
         isrcs = np.arange(ns)
         np.random.shuffle(isrcs)
-        for ibatch in range(int(np.round(ns / batch_size))):
+        for ibatch in range(int(np.ceil(ns / batch_size))):
             # Select sources batch
             isrcbatch = isrcs[ibatch * batch_size:(ibatch + 1) * batch_size]
             MDCop.update(isrcbatch)
@@ -174,12 +174,23 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             # Compute error norm
             if mtrue is not None:
                 if ivstrue is None:
-                    enorm = np.linalg.norm(model / model.max() -
-                                           mtrue / mtrue.max())
+                    if enormabsscaling:
+                        mmax = np.abs(model).max()
+                        mtruemax = np.abs(mtrue).max()
+                    else:
+                        mmax = model.max()
+                        mtruemax = mtrue.max()
+                    enorm = np.linalg.norm(model / mmax -
+                                           mtrue / mtruemax)
                 else:
-                    enorm = np.linalg.norm(
-                        model[..., ivstrue] / model[..., ivstrue].max() -
-                        mtrue/ mtrue.max())
+                    if enormabsscaling:
+                        mmax = np.abs(model[..., ivstrue]).max()
+                        mtruemax = np.abs(mtrue).max()
+                    else:
+                        mmax = model[..., ivstrue].max()
+                        mtruemax = mtrue.max()
+                    enorm = np.linalg.norm(model[..., ivstrue] / mmax -
+                                           mtrue/ mtruemax)
                 enormhist.append(enorm)
 
             # Update learning rate
