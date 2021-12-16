@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import torch
 import torch.nn as nn
@@ -150,60 +151,71 @@ def MDDbatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs,
 
 def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
                  twosided=True, mtrue=None, ivstrue=None, enormwin=None, enormabsscaling=False,
-                 seed=None, scheduler=None, epochprint=10, reciprocity=False, timemask=None,
-                 savegradnorm=False, savefirstgrad=False, kwargs_sched=None, **kwargs_solver):
+                 seed=None, scheduler=None, epochprint=10,
+                 reciprocity=False, timemask=None, reciprocitytime_endepoch=False,
+                 savelossnorm=True, savegradnorm=False, savefirstgrad=False, timeit=True,
+                 kwargs_sched=None, **kwargs_solver):
     r"""MDD with mini-batch gradient descent methods
 
-        Parameters
-        ----------
-        nt : :obj:`int`
-            Number of samples in time
-        nr : :obj:`int`
-            Number of samples in receiver axis
-        dt : :obj:`float`
-            Sampling of time integration axis
-        dr : :obj:`float`
-            Sampling of receiver integration axis
-        Gfft : :obj:`np.ndarray`
-            Frequency domain kernel (:math:`n_{f} \times n_s \times n_r`)
-        d : :obj:`torch.tensor`
-            Data (:math:`2n_t-1 \times n_s`)
-        optimizer : :obj:`torch.optimizer`
-            Optimizer function handle`
-        n_epochs : :obj:`int`
-            Number of samples in time
-        batch_size : :obj:`int`
-            Size of batch
-        twosided : :obj:`bool`, optional
-            Kernel is two-sided (``True``) or one-sided (``False``)
-        mtrue : :obj:`torch.tensor`, optional
-            True model (:math:`2n_t-1 \times n_r`)
-        ivstrue : :obj:`int`, optional
-            Index of virtual source to select when  computing error norm
-        seed : :obj:`int`, optional
-            Seed (if set, the data will be shuffled always in the same way
-        enormwin : :obj:`list`, optional
-            Compute normalization in window for error norm
-        enormabsscaling : :obj:`bool`, optional
-            Normalize fields by absolute maximum for error norm
-        scheduler : :obj:`torch.optim.lr_scheduler`, optional
-            Scheduler object
-        epochprint : :obj:`int`, optional
-            Number of epochs after which the losses are printed on screen
-        reciprocity : :obj:`bool`, optional
-            Enfore reciprocity at each iteration
-        timemask : :obj:`np.ndarray`, optional
-            Apply time mask at every iteration
-        savegradnorm : :obj:`bool`, optional
-            Save norm of gradient over iterations
-        savefirstgrad : :obj:`bool`, optional
-            Save first gradient
-        kwargs_sched : :obj:`dict`, optional
-            Additional keyword arguments for scheduler
-        kwargs_solver : :obj:`dict`, optional
-            Additional keyword arguments for optimizer
-            
+    Parameters
+    ----------
+    nt : :obj:`int`
+        Number of samples in time
+    nr : :obj:`int`
+        Number of samples in receiver axis
+    dt : :obj:`float`
+        Sampling of time integration axis
+    dr : :obj:`float`
+        Sampling of receiver integration axis
+    Gfft : :obj:`np.ndarray`
+        Frequency domain kernel (:math:`n_{f} \times n_s \times n_r`)
+    d : :obj:`torch.tensor`
+        Data (:math:`2n_t-1 \times n_s`)
+    optimizer : :obj:`torch.optimizer`
+        Optimizer function handle`
+    n_epochs : :obj:`int`
+        Number of samples in time
+    batch_size : :obj:`int`
+        Size of batch
+    twosided : :obj:`bool`, optional
+        Kernel is two-sided (``True``) or one-sided (``False``)
+    mtrue : :obj:`torch.tensor`, optional
+        True model (:math:`2n_t-1 \times n_r`)
+    ivstrue : :obj:`int`, optional
+        Index of virtual source to select when  computing error norm
+    seed : :obj:`int`, optional
+        Seed (if set, the data will be shuffled always in the same way
+    enormwin : :obj:`list`, optional
+        Compute normalization in window for error norm
+    enormabsscaling : :obj:`bool`, optional
+        Normalize fields by absolute maximum for error norm
+    scheduler : :obj:`torch.optim.lr_scheduler`, optional
+        Scheduler object
+    epochprint : :obj:`int`, optional
+        Number of epochs after which the losses are printed on screen
+    reciprocity : :obj:`bool`, optional
+        Enfore reciprocity at each iteration
+    timemask : :obj:`np.ndarray`, optional
+        Apply time mask at every iteration
+    reciprocitytime_endepoch : :obj:`bool`, optional
+        Apply reciprocity and/or time mask only at the end of every epoch
+    savelossnorm : :obj:`bool`, optional
+        Save norm of loss over entire batch at end of every epoch
+    savegradnorm : :obj:`bool`, optional
+        Save norm of gradient over iterations
+    savefirstgrad : :obj:`bool`, optional
+        Save first gradient
+    timeit : :obj:`bool`, optional
+        Time execution
+    kwargs_sched : :obj:`dict`, optional
+        Additional keyword arguments for scheduler
+    kwargs_solver : :obj:`dict`, optional
+        Additional keyword arguments for optimizer
+
     """
+    if timeit:
+        t0 = time.time()
+
     # Set seed
     if seed is not None:
         torch.manual_seed(seed)
@@ -222,8 +234,12 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     # Define operator, loss, and solver
     criterion = nn.MSELoss()
     optimizer = optimizer([model], **kwargs_solver)
-    MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity, timemask=timemask)
-    MDCAllop = MDC(nt, dt, dr, nv=nv, twosided=twosided, reciprocity=reciprocity, timemask=timemask)
+    MDCop = MDC(nt, dt, dr, nv=nv, twosided=twosided,
+                reciprocity=reciprocity if not reciprocitytime_endepoch else False,
+                timemask=timemask if not reciprocitytime_endepoch else None)
+    MDCAllop = MDC(nt, dt, dr, nv=nv, twosided=twosided,
+                   reciprocity=reciprocity if not reciprocitytime_endepoch else False,
+                   timemask=timemask if not reciprocitytime_endepoch else None)
 
     # Define scheduler
     if scheduler is not None:
@@ -326,15 +342,25 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
                 scheduler.step()
                 lr.append(optimizer.param_groups[0]["lr"])
 
+        # apply preconditioners (not in last epoch)
+        if reciprocitytime_endepoch and epoch < n_epochs-1:
+            with torch.no_grad():
+                if reciprocity:
+                    model = 0.5 * (model + model.transpose(2, 1))
+                if timemask is not None:
+                    model = model * timemask
+            model.requires_grad_(True)
+
         # compute average loss over epoch
         avg_loss = sum(losses) / len(losses)
         lossavg.append(avg_loss)
         
         # compute loss of entire batch
-        with torch.no_grad():
-            dataall = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
-            lossall = criterion(torch.transpose(dataall, 1, 0), d)
-            lossepoch.append(lossall.item())
+        if savelossnorm:
+            with torch.no_grad():
+                dataall = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
+                lossall = criterion(torch.transpose(dataall, 1, 0), d)
+                lossepoch.append(lossall.item())
 
         if (epoch + 1) % epochprint == 0:
             print(f'epoch: {epoch + 1:3d}, loss : {loss.item():.4e}, loss avg : {avg_loss:.4e}')
@@ -342,7 +368,10 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     # compute final data
     data = MDCop(model, torch.transpose(Gfft, 1, 0).cpu().numpy())
     print('Final Model norm: %e' % torch.sum(torch.abs(model)**2).item())
-    
+
+    if timeit:
+        print('Time: %f s' % (time.time() - t0))
+
     if not savegradnorm:
         return model, data, losshist, lossavg, lossepoch, enormhist, lr
     elif not savefirstgrad:
