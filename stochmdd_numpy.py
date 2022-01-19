@@ -56,10 +56,10 @@ class ExponentialLR():
         self.optimizer.lr *= self.gamma
 
 
-def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
+def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size, shuffle=True,
                  twosided=True, mtrue=None, ivstrue=None, enormabsscaling=False,
                  seed=None, scheduler=None, epochprint=10, reciprocity=False,
-                 savegradnorm=False, timeit=True,
+                 savegradnorm=False, savefirstgrad=False, timeit=True,
                  kwargs_sched=None, **kwargs_solver):
     r"""MDD with mini-batch gradient descent methods
 
@@ -86,6 +86,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
         Number of samples in time
     batch_size : :obj:`int`
         Size of batch
+    shuffle : :obj:`bool`, optional
+        Shuffle before batching
     twosided : :obj:`bool`, optional
         Kernel is two-sided (``True``) or one-sided (``False``)
     mtrue : :obj:`torch.tensor`, optional
@@ -104,8 +106,11 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
         Save norm of gradient over iterations
     savegradnorm : :obj:`bool`, optional
         Time solver
-    kwargs_sched : :obj:`dict`, optional
+    savefirstgrad : :obj:`bool`, optional
+        Save first gradientkwargs_sched : :obj:`dict`, optional
         Additional keyword arguments for scheduler
+    timeit : :obj:`bool`, optional
+        Time execution
     kwargs_solver : :obj:`dict`, optional
         Additional keyword arguments for optimizer
 
@@ -146,7 +151,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     for epoch in range(n_epochs):
         losses = []
         isrcs = np.arange(ns)
-        np.random.shuffle(isrcs)
+        if shuffle:
+            np.random.shuffle(isrcs)
         for ibatch in range(int(np.ceil(ns / batch_size))):
             # Select sources batch
             isrcbatch = isrcs[ibatch * batch_size:(ibatch + 1) * batch_size]
@@ -155,16 +161,19 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
             # Compute gradient
             grad, loss = MDCop.grad(d[:, isrcbatch].ravel(), model)
 
+            # Compensate for last gradient that may be smaller than batch_size
+            if len(isrcbatch) < batch_size:
+                grad *= (batch_size / len(isrcbatch))
+
             # Update model
-            #model -= optimizer.lr * grad.reshape(model.shape)
             optimizer.step(grad.reshape(model.shape))
 
             # Compute gradient norm
             if firstgrad:
                 gnorm = np.linalg.norm(grad / ((2 * nt - 1) * nr)) ** 2
                 print('Initial Loss norm: %e' % (loss / ((2 * nt - 1) * batch_size)))
-                print('Initial Gradient norm: %e, scaled by lr: %e' % (
-                    gnorm, gnorm * optimizer.lr ** 2))
+                print('Initial Gradient norm: %e, scaled by lr: %e' % (gnorm, gnorm * optimizer.lr ** 2))
+                gradfirst = grad.copy()
                 firstgrad = False
 
             # Update losses history
@@ -212,4 +221,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     if timeit:
         print('Time: %f s' % (time.time() - t0))
 
-    return model, data, losshist, lossavg, lossepoch, enormhist, lr
+    if not savefirstgrad:
+        return model, data, losshist, lossavg, lossepoch, enormhist, lr
+    else:
+        return model, data, losshist, lossavg, lossepoch, enormhist, gradfirst
