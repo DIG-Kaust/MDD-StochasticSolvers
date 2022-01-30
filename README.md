@@ -4,14 +4,14 @@ Repository containing material for the `Stochastic Multi-dimensional deconvoluti
 
 Four examples are considered:
 
-* ``Hyperbolic``: set of synthetically generated hyperbolic events for both model and kernel operator.
-* ``Dipping_OBC``: layered model with dipping seabed and receivers at the seabed in OBC style acquisition. 
+* **Hyperbolic**: set of synthetically generated hyperbolic events for both model and kernel operator.
+* **Dipping_OBC**: layered model with dipping seabed and receivers at the seabed in OBC style acquisition. 
   Data are created via FD modelling followed by up/down separation.
-* ``Salt``: salt model from [Vargas et al. (2021)](https://library.seg.org/doi/full/10.1190/geo2020-0939.1). 
+* **Salt**: salt model from [Vargas et al. (2021)](https://library.seg.org/doi/full/10.1190/geo2020-0939.1). 
   Data are created via Scattering-Rayleigh-Marchenko redatuming.
-* ``Synthetic_Volve``: synthetic model that resembles the Volve field subsurface model. See [VolveSynthetic](https://github.com/DIG-Kaust/VolveSynthetic)
+* **Synthetic_Volve**: synthetic model that resembles the Volve field subsurface model. See [VolveSynthetic](https://github.com/DIG-Kaust/VolveSynthetic)
   for more details regarding the generation of the model and seismic data. Data are created via FD modelling followed by up/down separation.
-* ``Field_Volve``: field Volve OBC dataset, data are pre-processed by up/down separation.
+* **Field_Volve**: field Volve OBC dataset, data are pre-processed by up/down separation.
 
 
 ## Project structure
