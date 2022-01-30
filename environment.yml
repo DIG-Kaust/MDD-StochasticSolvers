@@ -12,7 +12,10 @@ dependencies:
   - pylops
   - matplotlib
   - tqdm
+  - xarray
+  - netCDF4
   - pip:
     - pylops-gpu
     - scooby
     - torch-summary
+    - setuptools_scm

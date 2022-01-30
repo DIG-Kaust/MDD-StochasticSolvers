@@ -1,0 +1,38 @@
+# OS generated files #
+.*.swp
+*.py[cod]
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/*
+static/*
+db.sqlite3
+
+# Build #
+build
+dist
+stochmdd.egg-info/
+.eggs
+
+# setuptools_scm generated  #
+stochmdd/version.py
+
+# Development #
+.ipynb_checkpoints/
+TODO
+venv
+
+# Pylint #
+pylint_plot.py
+pylintrc
+
+# Coverage reports
+COVERAGE
+.coverage
+coverage.xml
+htmlcov/
+

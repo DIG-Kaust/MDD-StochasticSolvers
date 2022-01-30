@@ -1,35 +1,25 @@
 # MDD-StochasticSolvers
 
-Repository containing material for the `Multi-dimensional deconvolution with stochastic solvers` project.
+Repository containing material for the `Stochastic Multi-dimensional deconvolution` project.
 
-Two synthetic examples are considered:
+Four examples are considered:
 
-* Hyperbolic: Set of synthetically generated hyperbolic events for both model and kernel operator
-* WavefieldSeparation-dipping: Layered model with dipping seabed and receivers in obc acquisition. Data are created via FD modelling up/down separation
+* ``Hyperbolic``: set of synthetically generated hyperbolic events for both model and kernel operator.
+* ``Dipping_OBC``: layered model with dipping seabed and receivers at the seabed in OBC style acquisition. 
+  Data are created via FD modelling followed by up/down separation.
+* ``Salt``: salt model from [Vargas et al. (2021)](https://library.seg.org/doi/full/10.1190/geo2020-0939.1). 
+  Data are created via Scattering-Rayleigh-Marchenko redatuming.
+* ``Synthetic_Volve``: synthetic model that resembles the Volve field subsurface model. See [VolveSynthetic](https://github.com/DIG-Kaust/VolveSynthetic)
+  for more details regarding the generation of the model and seismic data. Data are created via FD modelling followed by up/down separation.
+* ``Field_Volve``: field Volve OBC dataset, data are pre-processed by up/down separation.
 
 
 ## Project structure
 This repository is organized as follows:
 
-* **Data**: folder where input data must be placed (cannot be uploaded directly to Github and will be shared separately)
-
-* **stochmdd.py**: set of routines to perform MDD with stochastic gradients
-
-* **Hyperbolic_MDD_basic.ipynb**: notebook performing a basic example of MDC and MDD for both single and multiple virtual sources to familiarize with the forward modelling and inverse problem
-
-* **Hyperbolic_MDD_basic_trackednorms.ipynb**: notebook performing the basic example of MDC and MDD for a single virtual source with additional code for tracking norm of residual and error
-
-* **Hyperbolic_MDD_stochastic.ipynb**: notebook performing MDD on single virtual source with full batch stochastic solvers
-
-* **Hyperbolic_MDD_stochasticminibatch.ipynb**: notebook performing MDD on single virtual source with mini batch stochastic solvers
-
-* **WavefieldSeparation-dipping_MDD_basic.ipynb**: notebook performing wavefield separation for synthetic obc data with dipping seabed followed by standard MDD
-
-* **WavefieldSeparation-dipping_MDD_stochastic_singlesource.ipynb**: notebook performing MDD on single virtual source with stochastic solvers
-
-* **WavefieldSeparation-dipping_MDD_stochastic_multisource.ipynb**: notebook performing MDD on multiple virtual sources with stochastic solvers
-
-
+- **stochmdd**: python library containing routines for stochastic mdd
+- **notebooks**: set of jupyter notebooks reproducing the experiments in the paper (see the README file inside this folder for more details)
+* **data**: folder where input data must be placed
 
 ## Getting started
 To ensure reproducibility of the results, we suggest using the `environment.yml` file when creating an environment.
