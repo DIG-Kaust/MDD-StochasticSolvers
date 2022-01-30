@@ -149,7 +149,7 @@ def MDDbatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs,
     return model, data, losshist, lossavg, enormhist
 
 
-def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
+def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size, shuffle=True,
                  twosided=True, mtrue=None, ivstrue=None, enormwin=None, enormabsscaling=False,
                  seed=None, scheduler=None, epochprint=10,
                  reciprocity=False, timemask=None, reciprocitytime_endepoch=False,
@@ -177,6 +177,8 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
         Number of samples in time
     batch_size : :obj:`int`
         Size of batch
+    shuffle : :obj:`bool`, optional
+        Shuffle before batching
     twosided : :obj:`bool`, optional
         Kernel is two-sided (``True``) or one-sided (``False``)
     mtrue : :obj:`torch.tensor`, optional
@@ -248,7 +250,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size,
     # Create dataloader
     trainloader = DataLoader(dataset=TensorDataset(Gfft, d),
                              batch_size=batch_size,
-                             shuffle=True)
+                             shuffle=shuffle)
     losshist = []
     lossavg = []
     lossepoch = []
