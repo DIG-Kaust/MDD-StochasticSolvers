@@ -27,8 +27,9 @@ The notebooks are divided into five main directories:
     - ``Volve_synthetic_MDD_stochastic.ipynb``: notebook performing MDD on single and multiple virtual sources with stochastic solvers
   
 * **Field_Volve**: 
-
-
+    - ``Volve_MDD_stochastic.ipynb``: notebook performing MDD on single and multiple virtual sources with stochastic solvers
+    - ``Volve_MDD_stochastic_masked.ipynb``: same as above but with additional time window preconditioner
+  
 * **Others**: 
   - ``SteepestDescent.ipynb``: notebook applying steepest descent algorithm on simple problem
   - ``Paper_figures.ipynb``: notebook recreating all figures in XX paper.
