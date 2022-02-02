@@ -12,6 +12,7 @@ def butter_lowpass(cutoff, fs, order=5):
     sos = butter(order, normal_cutoff, btype='low', analog=False, output='sos')
     return sos
 
+
 def butter_lowpass_filter(data, cutoff, fs, order=5):
     sos = butter_lowpass(cutoff, fs, order=order)
     y = sosfilt(sos, data)
@@ -253,3 +254,35 @@ def calibrated_wavefield_separation(sg, ishot,
     return pfilt, vzfilt, vzcalib, pup, pdown, offset_x, \
            pfilt[itrace], vzcalib[itrace], pup[itrace], pdown[itrace], rec_x[itrace], rec_y[itrace]
 
+
+def mask_xt(trav, t, toff, nsmooth):
+    """Causality mask in the time-space domain
+
+    :param trav: Eikonal traveltimes, (nr, ns)
+    :param t: Time axis, (nt,)
+    :param toff: Time 'Epsilon' shift in the mask
+    :param nsmooth: Smoothing parameter
+
+    :return: Causality Preconditioner mask, (nt, nr, ns)
+    """
+    # define window size
+    nt = t.size
+    nr, ns = trav.shape
+
+    # replicate along time axis
+    trav = np.tile(trav, (nt, 1, 1))
+    trav_off = trav - toff
+
+    # build mask
+    C = (t * np.ones([nt, nr, ns]).transpose(2, 1, 0)).transpose(2, 1, 0)
+    C = (C > trav_off).astype(np.int)
+
+    # smooth adges
+    if nsmooth > 0:
+        smooth = np.ones(nsmooth) / nsmooth
+        C = filtfilt(smooth, 1, C)
+
+    # extend to negative time [-t, t]
+    C = np.concatenate((np.zeros([nt, nr, ns]), C[1:, :, :]), axis=0)
+
+    return C

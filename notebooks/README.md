@@ -19,19 +19,16 @@ The notebooks are divided into five main directories:
   - ``WavefieldSeparation-dipping_MDD_stochastic_multisource_torch_vs_numpy.ipynb``: same as above but benchmark of torch vs numpy implementation
 
 * **Salt**: 
-  
+  - ``MarchenkoSalt_MDD_stochastic_singlesource.ipynb``: notebook performing MDD on single virtual source with stochastic solvers
+  - ``MarchenkoSalt_MDD_stochastic_multisource.ipynb``: notebook performing MDD on multiple virtual source with stochastic solvers
+  - ``MarchenkoSalt_MDD_stochastic_multisource_reciprocity.ipynb``: same as above but with additional reciprocity preconditioner
+
 * **Synthetic_Volve**: 
+    - ``Volve_synthetic_MDD_stochastic.ipynb``: notebook performing MDD on single and multiple virtual sources with stochastic solvers
   
 * **Field_Volve**: 
+
 
 * **Others**: 
   - ``SteepestDescent.ipynb``: notebook applying steepest descent algorithm on simple problem
   - ``Paper_figures.ipynb``: notebook recreating all figures in XX paper.
-
-
-
-
-
-
-* **WavefieldSeparation-dipping_MDD_stochastic_multisource.ipynb**: notebook performing MDD on multiple virtual sources with stochastic solvers
-

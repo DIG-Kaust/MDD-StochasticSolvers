@@ -18,4 +18,5 @@ dependencies:
     - pylops-gpu
     - scooby
     - torch-summary
+    - segyio
     - setuptools_scm
