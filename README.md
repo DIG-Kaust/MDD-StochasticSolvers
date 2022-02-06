@@ -13,13 +13,15 @@ Four examples are considered:
   for more details regarding the generation of the model and seismic data. Data are created via FD modelling followed by up/down separation.
 * **Field_Volve**: field Volve OBC dataset, data are pre-processed by up/down separation.
 
-
 ## Project structure
 This repository is organized as follows:
 
 - **stochmdd**: python library containing routines for stochastic mdd
 - **notebooks**: set of jupyter notebooks reproducing the experiments in the paper (see the README file inside this folder for more details)
 * **data**: folder where input data must be placed
+
+**NOTE**: due to their large size, the various datasets cannot be shared directly in this repository. If interested, contact the authors directly!
+
 
 ## Getting started
 To ensure reproducibility of the results, we suggest using the `environment.yml` file when creating an environment.
