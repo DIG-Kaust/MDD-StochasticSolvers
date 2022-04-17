@@ -32,6 +32,7 @@ def steepest_descent(G, d, niter=10, m0=None, a=None, tol=1e-10, savemhist=True)
             break
     return m if not savemhist else mh[:i+2], rh[:i+2], ah[:i+1]
 
+
 def steepest_descent1(G, d, niter=10, m0=None, a=None, tol=1e-10):
     """Steepest descent  for minimizing 0.5||d - Gm||^2
     """

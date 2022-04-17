@@ -95,7 +95,7 @@ def MDDminibatch(nt, nr, dt, dr, Gfft, d, optimizer, n_epochs, batch_size, shuff
     ivstrue : :obj:`int`, optional
         Index of virtual source to select when  computing error norm
     seed : :obj:`int`, optional
-        Seed (if set, the data will be shuffled always in the same way
+        Seed (if set, the data will be shuffled always in the same way)
     scheduler : :obj:`torch.optim.lr_scheduler`, optional
         Scheduler object
     epochprint : :obj:`int`, optional

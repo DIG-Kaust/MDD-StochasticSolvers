@@ -32,4 +32,5 @@ The notebooks are divided into five main directories:
   
 * **Others**: 
   - ``SteepestDescent.ipynb``: notebook applying steepest descent algorithm on simple problem
+  - ``SteepestDescent_stochastic.ipynb``: notebook comparing steepest descent and stochastic gradient on simple problem
   - ``Paper_figures.ipynb``: notebook recreating all figures in XX paper.
