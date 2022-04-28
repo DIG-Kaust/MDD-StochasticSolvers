@@ -30,7 +30,11 @@ The notebooks are divided into five main directories:
     - ``Volve_MDD_stochastic.ipynb``: notebook performing MDD on single and multiple virtual sources with stochastic solvers
     - ``Volve_MDD_stochastic_masked.ipynb``: same as above but with additional time window preconditioner
   
+* **Figures**: 
+  - ``Paper_figures.ipynb``: notebook recreating all figures in XX paper.
+
 * **Others**: 
   - ``SteepestDescent.ipynb``: notebook applying steepest descent algorithm on simple problem
-  - ``SteepestDescent_stochastic.ipynb``: notebook comparing steepest descent and stochastic gradient on simple problem
-  - ``Paper_figures.ipynb``: notebook recreating all figures in XX paper.
+  - ``SteepestDescent_stochastic.ipynb``: notebook comparing steepest descent and various stochastic gradient algorithms on linear regression problem
+  - ``LogisticReg_stochastic.ipynb``: notebook comparing various stochastic gradient algorithms on logistic regression problem (formulation1)
+  - ``LogisticReg1_stochastic.ipynb``: notebook comparing various stochastic gradient algorithms on logistic regression problem (formulation2)
