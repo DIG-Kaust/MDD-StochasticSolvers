@@ -1,6 +1,5 @@
 ![MDD-StochasticSolvers](https://github.com/DIG-Kaust/MDD-StochasticSolvers/blob/main/logo.png)
 
-Repository containing material for the `Stochastic Multi-dimensional deconvolution` project.
 Reproducible material for **Stochastic Multi-dimensional Deconvolution -
 Ravasi M., Selvan, T., Luiken N. ** - [ArXiv Paper](https://arxiv.org/abs/2202.04486).
 
