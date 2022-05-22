@@ -4,19 +4,18 @@ channels:
   - conda-forge
   - pytorch
 dependencies:
-  - python>=3.6.4
-  - numpy>=1.15.0
-  - scipy>=1.4.0
-  - pytorch>=1.2.0
-  - scikit-learn 
-  - pylops
-  - matplotlib
-  - tqdm
-  - xarray
-  - netCDF4
+  - python=3.9.7
+  - numpy=1.19.2
+  - scipy=1.6.2
+  - pytorch=1.10.2
+  - scikit-learn=1.0.2
+  - pylops=1.17.0
+  - matplotlib=3.5.0
+  - tqdm=4.62.3
+  - xarray=0.21.0
+  - netCDF4=1.5.7
   - pip:
-    - pylops-gpu
-    - scooby
-    - torch-summary
-    - segyio
+    - pylops-gpu=0.0.1
+    - torch-summary=1.4.5
+    - segyio=1.9.7
     - setuptools_scm
