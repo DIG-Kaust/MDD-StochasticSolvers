@@ -7,9 +7,9 @@ Ravasi M., Selvan, T., Luiken N.** - [ArXiv Paper](https://arxiv.org/abs/2202.04
 ## Project structure
 This repository is organized as follows:
 
-- **stochmdd**: python library containing routines for stochastic mdd
-- **notebooks**: set of jupyter notebooks reproducing the experiments in the paper (see the README file inside this folder for more details)
-* **data**: folder where input data must be placed
+- :open_file_folder: **stochmdd**: python library containing routines for stochastic mdd
+- :open_file_folder: **notebooks**: set of jupyter notebooks reproducing the experiments in the paper (see the README file inside this folder for more details)
+* :open_file_folder: **data**: folder where input data must be placed
 
 **NOTE**: due to their large size, the various datasets cannot be shared directly in this repository. You can download the VolveSynthetic dataset from this [Zenodo link](https://zenodo.org/record/6572286#.Yotw7XUzbds).  If interested in any of the other datasets, contact the authors directly!
 
@@ -28,7 +28,7 @@ Four experiments are considered:
 * **Field_Volve**: field Volve OBC dataset, data are pre-processed by up/down separation.
 
 
-## Getting started
+## Getting started :space_invader: :robot:
 To ensure reproducibility of the results, we suggest using the `environment.yml` file when creating an environment.
 
 When working within KAUST computational environment, first install Miniconda using [https://github.com/kaust-rccl/ibex-miniconda-install](https://github.com/kaust-rccl/ibex-miniconda-install).

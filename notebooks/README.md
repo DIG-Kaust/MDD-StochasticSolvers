@@ -9,19 +9,19 @@ The notebooks are divided into five main directories:
   - :orange_book: ``Hyperbolic_MDD_stochasticminibatch_numpy.ipynb``: same as above but purely implemented in numpy
 
 * **:open_file_folder: Dipping_OBC**: 
-  - ``WavefieldSeparation-dipping_MDD_basic.ipynb``**``: notebook performing wavefield separation for synthetic obc data with dipping seabed followed by standard MDD
-  - ``WavefieldSeparation-dipping_MDD_steepest_singlesource.ipynb``: notebook performing MDD on single virtual source with steepest descent solver
-  - ``WavefieldSeparation-dipping_MDD_stochastic_singlesource.ipynb``: notebook performing MDD on single virtual source with stochastic solvers
-  - ``WavefieldSeparation-dipping_MDD_stochastic_singlesource_numpy.ipynb``: same as above but purely implemented in numpy
-  - ``WavefieldSeparation-dipping_MDD_stochastic_singlesource_torch_vs_numpy.ipynb``: same as above but benchmark of torch vs numpy implementation
-  - ``WavefieldSeparation-dipping_MDD_stochastic_multisource.ipynb``: notebook performing MDD on multiple virtual sources with stochastic solvers
-  - ``WavefieldSeparation-dipping_MDD_stochastic_multisource_numpy.ipynb``: same as above but purely implemented in numpy
-  - ``WavefieldSeparation-dipping_MDD_stochastic_multisource_torch_vs_numpy.ipynb``: same as above but benchmark of torch vs numpy implementation
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_basic.ipynb``**``: notebook performing wavefield separation for synthetic obc data with dipping seabed followed by standard MDD
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_steepest_singlesource.ipynb``: notebook performing MDD on single virtual source with steepest descent solver
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_singlesource.ipynb``: notebook performing MDD on single virtual source with stochastic solvers
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_singlesource_numpy.ipynb``: same as above but purely implemented in numpy
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_singlesource_torch_vs_numpy.ipynb``: same as above but benchmark of torch vs numpy implementation
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_multisource.ipynb``: notebook performing MDD on multiple virtual sources with stochastic solvers
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_multisource_numpy.ipynb``: same as above but purely implemented in numpy
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_multisource_torch_vs_numpy.ipynb``: same as above but benchmark of torch vs numpy implementation
 
 * **:open_file_folder: Salt**: 
-  - ``MarchenkoSalt_MDD_stochastic_singlesource.ipynb``: notebook performing MDD on single virtual source with stochastic solvers
-  - ``MarchenkoSalt_MDD_stochastic_multisource.ipynb``: notebook performing MDD on multiple virtual source with stochastic solvers
-  - ``MarchenkoSalt_MDD_stochastic_multisource_reciprocity.ipynb``: same as above but with additional reciprocity preconditioner
+  - :orange_book: ``MarchenkoSalt_MDD_stochastic_singlesource.ipynb``: notebook performing MDD on single virtual source with stochastic solvers
+  - :orange_book: ``MarchenkoSalt_MDD_stochastic_multisource.ipynb``: notebook performing MDD on multiple virtual source with stochastic solvers
+  - :orange_book: ``MarchenkoSalt_MDD_stochastic_multisource_reciprocity.ipynb``: same as above but with additional reciprocity preconditioner
   
 * **:open_file_folder: Synthetic_Volve**: 
   - :orange_book: ``Volve_synthetic_MDD_stochastic.ipynb``: notebook performing MDD on single and multiple virtual sources with stochastic solvers
