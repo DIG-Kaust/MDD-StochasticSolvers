@@ -11,7 +11,7 @@ This repository is organized as follows:
 - **notebooks**: set of jupyter notebooks reproducing the experiments in the paper (see the README file inside this folder for more details)
 * **data**: folder where input data must be placed
 
-**NOTE**: due to their large size, the various datasets cannot be shared directly in this repository. If interested, contact the authors directly!
+**NOTE**: due to their large size, the various datasets cannot be shared directly in this repository. Download the dataset from this [Zenodo link](https://zenodo.org/record/6572286#.Yotw7XUzbds) and place its content in the data folder.
 
 
 ## Data and Experiements
