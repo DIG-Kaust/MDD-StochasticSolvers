@@ -14,6 +14,7 @@ The notebooks are divided into five main directories:
   - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_singlesource.ipynb``: notebook performing MDD on single virtual source with stochastic solvers
   - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_singlesource_numpy.ipynb``: same as above but purely implemented in numpy
   - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_singlesource_torch_vs_numpy.ipynb``: same as above but benchmark of torch vs numpy implementation
+  - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_singlesource_adam.ipynb``: notebook performing MDD on single virtual source with adam solver
   - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_multisource.ipynb``: notebook performing MDD on multiple virtual sources with stochastic solvers
   - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_multisource_numpy.ipynb``: same as above but purely implemented in numpy
   - :orange_book: ``WavefieldSeparation-dipping_MDD_stochastic_multisource_torch_vs_numpy.ipynb``: same as above but benchmark of torch vs numpy implementation
